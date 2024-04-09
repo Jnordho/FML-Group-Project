@@ -9,7 +9,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## Loading libraries and data
-I am selecting the variables that have the least missing values and most relevance to the target response of city perception 
+I am selecting the variables that have the least missing values and most obviously relevance to the target response of city perception 
 ```{r}
 set.seed(123)
 library(tidyverse)
@@ -27,7 +27,6 @@ head(data)
 ## Normalizing variables
 ```{r}
 norm_model <- preProcess(data, method = c("center", "scale"))
-
 normalized_data <- predict(norm_model, newdata = data)
 
 summary(normalized_data)
