@@ -34,7 +34,7 @@ summary(normalized_data)
 
 ## Using knn to impute missing values 
 ```{r}
-k3 <- kNN(normalized_data, variable = c("Happy", "Satisfied_Gen", "Satisfied_Live", 
+k3 <- VIM::kNN(normalized_data, variable = c("Happy", "Satisfied_Gen", "Satisfied_Live", 
                       "Similarity", "Autonomy", "Satisfied_Neight", "City_Perception"), k = 3) 
 #k4 <- kNN(data, variable = c("Happy", "Satisfied_Gen", "Satisfied_Live", 
                       #"Similarity", "Autonomy", "Satisfied_Neight", "City_Perception"), k = 4)
