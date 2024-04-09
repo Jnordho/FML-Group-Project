@@ -1,0 +1,47 @@
+---
+title: "FML_FinalProject"
+output: html_document
+date: "2024-04-05"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Loading libraries and data
+I am selecting the variables that have the least missing values and most relevance to the target response of city perception 
+```{r}
+set.seed(123)
+library(tidyverse)
+library(VIM)
+library(caret)
+
+data <- read.csv("C:/Users/jackd/OneDrive/R Directory/Somerville_Happiness_Survey_Responses (1).csv", na.strings = "")
+colnames(data)[c(3:8, 39)] <- c("Happy", "Satisfied_Gen", "Satisfied_Live", 
+                                 "Similarity", "Autonomy", "Satisfied_Neight", "City_Perception") # Changing the column names to use the kNN() function
+data <- data %>%
+  select(c(3:8, 39)) # removing all other column so that kNN is calculated with only these variables
+
+head(data)
+```
+## Normalizing variables
+```{r}
+norm_model <- preProcess(data, method = c("center", "scale"))
+
+normalized_data <- predict(norm_model, newdata = data)
+
+summary(normalized_data)
+```
+
+## Using knn to impute missing values 
+```{r}
+k3 <- kNN(normalized_data, variable = c("Happy", "Satisfied_Gen", "Satisfied_Live", 
+                      "Similarity", "Autonomy", "Satisfied_Neight", "City_Perception"), k = 3) 
+#k4 <- kNN(data, variable = c("Happy", "Satisfied_Gen", "Satisfied_Live", 
+                      #"Similarity", "Autonomy", "Satisfied_Neight", "City_Perception"), k = 4)
+#k5 <- kNN(data, variable = c("Happy", "Satisfied_Gen", "Satisfied_Live", 
+                     # "Similarity", "Autonomy", "Satisfied_Neight", "City_Perception"), k = 5) 
+
+colMeans(is.na(k3))
+```
+
