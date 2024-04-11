@@ -67,9 +67,9 @@ k5 <- kNN(normalized_data,
 
 ## Exporting the new dataframes
 ```{r}
-write_xlsx(FML_Data_cleaned, 'C:/Users/jackd/OneDrive/R Directory/FML_Data_Cleaned.csv')
-write_xlsx(k3, 'C:/Users/jackd/OneDrive/R Directory/FML_Data_Cleaned_k3.csv')
-write_xlsx(k4, 'C:/Users/jackd/OneDrive/R Directory/FML_Data_Cleaned_k4.csv')
-write_xlsx(k5, 'C:/Users/jackd/OneDrive/R Directory/FML_Data_Cleaned_k5.csv')
+write_xlsx(FML_Data_cleaned, 'C:/Users/jackd/OneDrive/R Directory/FML_Data_Cleaned.xlsx')
+write_xlsx(k3, 'C:/Users/jackd/OneDrive/R Directory/FML_Data_Cleaned_k3.xlsx')
+write_xlsx(k4, 'C:/Users/jackd/OneDrive/R Directory/FML_Data_Cleaned_k4.xlsx')
+write_xlsx(k5, 'C:/Users/jackd/OneDrive/R Directory/FML_Data_Cleaned_k5.xlsx')
 ```
 
