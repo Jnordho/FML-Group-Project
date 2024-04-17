@@ -1,0 +1,106 @@
+---
+title: "FML_Project_Cleaning"
+output: html_document
+date: "2024-04-11"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Loading libraries and dataset
+```{r}
+library(writexl)
+library(dplyr)
+library(caret)
+library(VIM)
+
+FML_Data <- read.csv("C:/Users/jackd/OneDrive/R Directory/Somerville_Happiness_Survey_Responses_Trimmed_Columns.csv", na.strings = "")
+
+colnames(FML_Data)
+```
+
+## Removing columns that do not meet a 50% cutoff 
+```{r}
+# Calculate the percentage of missing values for each column
+missing_percentages <- (colSums(is.na(FML_Data)) / nrow(FML_Data)) * 100
+
+# Find columns with more than 50% missing data
+columns_to_remove <- names(missing_percentages[missing_percentages >= 50])
+
+# Remove these columns (except the target Variable)
+desired_column_name <- "Do.you.feel.the.City.is.headed.in.the.right.direction.or.is.it.on.the.wrong.track"
+FML_Data_cleaned <- FML_Data[, !(names(FML_Data) %in% columns_to_remove & names(FML_Data) != desired_column_name)]
+
+# Checking the percent of NA's in each column to verify that our code worked
+colMeans(is.na(FML_Data_cleaned)) 
+```
+
+## Removing row with values outside of the 1-10 scale
+```{r}
+FML_Data_cleaned <- FML_Data_cleaned %>%
+  filter(When.making.decisions..are.you.more.likely.to.seek.advice.or.decide.for.yourself >= 1 | 
+           is.na(When.making.decisions..are.you.more.likely.to.seek.advice.or.decide.for.yourself)) %>% # filtering out the out of scale 0s
+  select(-one_of("race_ethnicity_prefernottosa")) # removing a column that only had one response 
+
+sapply(FML_Data_cleaned, min, na.rm = T)
+```
+
+## Dummy Variables
+```{r}
+label <- FML_Data_cleaned[,11]
+predictors <- FML_Data_cleaned[,-11]
+
+Dummy_Model <- dummyVars(~ ., data = predictors)
+
+dum_data_pred <- predict(Dummy_Model, newdata = predictors)
+
+data_dum <- cbind(data.frame(dum_data_pred), data.frame(label))
+
+str(data_dum)
+```
+
+##renaming variables
+```{r}
+colnames(data_dum) <- c("Happy", "Satisfied_Gen",  "Similarity", 
+                           "MD Way", "Availability", 
+                           "Quality(ps)", "Setting", 
+                           "Effectiveness(p)", "Female", "Male",
+                           "Divorced", "Seperated", "Living w/ Partner", "Married", "Never Married", "Widowed", 
+                           "Asia", 
+                           "Black", "White", "Race Other", "Age", "Income", "Perception")
+str(data_dum)
+```
+
+
+## imputing missing values with knn
+```{r}
+norm_model <- preProcess(data_dum, method = c("center", "scale"))
+
+normalized_data <- predict(norm_model, newdata = data_dum)
+
+columns_to_impute <- colnames(normalized_data)
+```
+```{r}
+# excluding the target variable and k = 3:5
+#k3 <- kNN(normalized_data,
+                  #variable = columns_to_impute,
+                  #k = 3, imp_var = FALSE)  
+k4 <- kNN(normalized_data,
+                  variable = columns_to_impute,
+                  k = 4, imp_var = FALSE)
+#k5 <- kNN(normalized_data,
+                  #variable = columns_to_impute,
+                 # k = 5, imp_var = FALSE)
+```
+
+
+## Exporting the new dataframes
+```{r}
+write_xlsx(FML_Data_cleaned, 'C:/Users/jackd/OneDrive/R Directory/FML_Data_Cleaned_v2.xlsx')
+#write_xlsx(k3, 'C:/Users/jackd/OneDrive/R Directory/FML_Data_Cleaned_k3.csv')
+write_xlsx(k4, 'C:/Users/jackd/OneDrive/R Directory/FML_Data_Cleaned_k4_v2.xlsx')
+#write_xlsx(k5, 'C:/Users/jackd/OneDrive/R Directory/FML_Data_Cleaned_k5.csv')
+```
+
+
